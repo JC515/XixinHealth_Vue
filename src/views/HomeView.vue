@@ -2,6 +2,33 @@
 
 import UserForm from "@/components/UserForm.vue";
 import ListView from "@/views/ListView.vue";
+import {useUserStore} from "@/stores/user.js";
+import axios from "axios";
+import {useRouter} from "vue-router";
+
+const user = useUserStore()
+const router = useRouter()
+
+const getName = async () => {
+  await axios.get('http://localhost:8080/doctor/getName', {
+    params: {
+      docCode: user.userId
+    }
+  }).then(res => {
+    user.realName = res.data.data
+  }).catch(err => {
+        console.log(err)
+      }
+  )
+}
+
+const logout = () => {
+  router.push('/login');
+  user.isLogin = false;
+  ElMessage.success('退出成功')
+}
+
+getName()
 </script>
 
 <template>
@@ -10,6 +37,14 @@ import ListView from "@/views/ListView.vue";
       <el-header class="el-header">
         <div class="header-content">
           <h1 class="title">熙心健康体检报告管理系统</h1>
+          <p style="position: absolute; right: 20px; top: 20px; font-size: 16px; color: #333;">
+            医生：{{ user.realName }}
+          </p>
+          <p style="position: absolute; right: 20px; top: 40px; font-size: 16px; color: #333;">
+            <el-button type="text" @click="logout()">
+              退出登录
+            </el-button>
+          </p>
         </div>
       </el-header>
       <el-container>

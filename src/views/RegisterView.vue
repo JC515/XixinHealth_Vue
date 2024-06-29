@@ -10,7 +10,8 @@ const registerForm = reactive({
   realName: '',
   password: '',
   sex: '',
-  deptNo: ''
+  deptNo: '',
+  hospitalId: '',
 })
 
 const checkForm = () => {
@@ -89,6 +90,12 @@ const handleRegister = async () => {
             <el-option label="检验科" value="1"></el-option>
             <el-option label="内科" value="2"></el-option>
             <el-option label="外科" value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="医院">
+          <el-select v-model="registerForm.hospitalId" placeholder="请选择医院">
+            <el-option label="光明市第一人民医院" value="1"></el-option>
+            <el-option label="光明市仁爱医院" value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-row justify="center">

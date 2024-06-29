@@ -29,10 +29,13 @@ const handleLogin = async () => {
   if (await doctorLogin(loginForm.username, loginForm.password)) {
     ElMessage.success('登录成功')
     user.isLogin = true
+    if (user.isRemember) {
+      user.userId = loginForm.username
+      user.password = loginForm.password
+    }
     await router.push({
       name: 'home'
     })
-    checkIsRemember()
   } else {
     ElMessage.error('用户名或密码错误')
   }
@@ -82,7 +85,7 @@ checkIsRemember();
         </el-row>
         <el-row justify="center">
           <el-button type="primary" @click="handleLogin">登录</el-button>
-          <el-button type="primary" @click="$router.push('/register')">注册</el-button>
+          <el-button type="primary" @click="$router.push({name: 'register'})">注册</el-button>
         </el-row>
       </el-form>
     </el-card>

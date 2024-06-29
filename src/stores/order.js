@@ -1,22 +1,24 @@
 import {ref} from 'vue'
 import {defineStore} from 'pinia'
 
-export const useOrderStore = defineStore('user', () => {
-    const mobile = ref('') // 手机号码
-    const name = ref('') // 姓名
+export const useOrderStore = defineStore('order', () => {
+    const phone = ref('') // 手机号码
+    const realName = ref('') // 姓名
     const sex = ref('') // 性别
-    const packageType = ref('') // 套餐类型
-    const checkupDate = ref('') // 检查日期
+    const type = ref('') // 套餐类型
+    const orderDate = ref('') // 检查日期
     const isArchived = ref('') // 是否归档
-    const nowOrderId = ref('') // 当前订单
+    const nowOrder = ref('') // 当前用户订单
+    const tableData = ref([]) // 订单列表数据
 
     return {
-        mobile,
-        name,
+        phone,
+        realName,
         sex,
-        packageType,
-        checkupDate,
+        type,
+        orderDate,
         isArchived,
-        nowOrderId
+        nowOrder,
+        tableData
     }
 })

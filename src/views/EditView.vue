@@ -1,7 +1,7 @@
 <script setup>
 import {reactive} from 'vue';
 import {useRoute} from 'vue-router';
-import UserForm from "@/components/UserForm.vue";
+import UserDisplay from "@/components/UserDisplay.vue";
 
 const edit1 = reactive({
   arg1: '',
@@ -53,13 +53,14 @@ const handleEdit1 = () => {
     <el-container>
       <el-header class="el-header">
         <div class="header-content">
+          <el-button type="primary" @click="$router.go(-1)" style="position: absolute; left: 20px; top: 20px;">返回</el-button>
           <h1 class="title">熙心健康体检报告管理系统</h1>
         </div>
       </el-header>
       <el-container>
         <el-aside width="360px" id="side_container">
-          <p style="font-size: 18px; margin-left: 20px;">体检客户查询</p>
-          <UserForm id="sideUserForm"></UserForm>
+          <p style="font-size: 18px; margin-left: 20px;">体检客户信息</p>
+          <UserDisplay id="sideUserForm"></UserDisplay>
         </el-aside>
         <el-main style="height: 100vh; padding: 40px; background-color: #F5FFFA;">
           <div>
