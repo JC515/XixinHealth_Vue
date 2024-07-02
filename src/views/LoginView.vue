@@ -2,10 +2,10 @@
 import {reactive} from 'vue'
 import {useRouter} from "vue-router";
 import {doctorLogin} from "@/api/doctor.js";
-import {useUserStore} from "@/stores/user.js";
+import {useDoctorStore} from "@/stores/doctor.js";
 
 const router = useRouter()
-const user = useUserStore();
+const user = useDoctorStore();
 
 const loginForm = reactive({
   username: user.userId,

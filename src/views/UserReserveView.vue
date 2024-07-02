@@ -174,6 +174,8 @@
 <script setup>
 import {ref} from 'vue'
 import axios from "axios";
+import {useUserStore} from "@/stores/user.js";
+import {onMounted} from 'vue'
 
 const active = ref(0)
 const isLogin = ref(true)
@@ -206,12 +208,11 @@ const findOrderByUserId = async () => {
           ElMessage.success('查询成功')
           userOrder.value.sex = userOrder.value.sex === '1' ? '男' : '女'
         } else {
-          ElMessage.error('查询失败')
+          ElMessage.error(res.data.message)
         }
       }
   ).catch(err => {
     console.log(err)
-    ElMessage.error('查询失败')
   });
 }
 
@@ -221,6 +222,13 @@ const loginFormCheck = () => {
     return false
   }
   return true
+}
+
+const user = useUserStore()
+
+const loadLocalData = () => {
+  loginForm.value.userId = user.userId
+  loginForm.value.password = user.password
 }
 
 const handleLogin = async () => {
@@ -371,7 +379,7 @@ const submitOrder = async () => {
     ElMessage.error('预约失败')
   })
 }
-ref(0);
+
 const setLogin = (login) => {
   isLogin.value = login
 }
@@ -381,11 +389,10 @@ const prev = () => {
     active.value--
   }
 }
-const next = () => {
-  if (active.value < 2) {
-    active.value++
-  }
-}
+
+onMounted(() => {
+  loadLocalData()
+})
 </script>
 
 <style scoped>
@@ -423,8 +430,4 @@ const next = () => {
   width: 100%;
 }
 
-.next-button {
-  margin-top: 12px;
-  width: 100%;
-}
 </style>

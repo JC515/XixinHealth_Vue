@@ -1,21 +1,17 @@
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
+import {ref} from 'vue'
+import {defineStore} from 'pinia'
 
 export const useUserStore = defineStore('user', () => {
-    const token = ref('')
     const userId = ref('')
-    const realName = ref('')
-    const isLogin = ref(false)
-    const isRemember = ref(true)
     const password = ref('')
+    const rememberMe = ref(false)
+    const yesLogin=ref(false)
 
     return {
-        token,
         userId,
-        realName,
-        isLogin,
-        isRemember,
-        password
+        password,
+        rememberMe,
+        yesLogin
     }
 }, {
     persist: true,

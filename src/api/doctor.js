@@ -1,8 +1,8 @@
 import Http from "@/utils/axiosUtil.js";
-import {useUserStore} from "@/stores/user.js";
+import {useDoctorStore} from "@/stores/doctor.js";
 
 const http = new Http('http://localhost:8080/doctor');
-const user = useUserStore();
+const user = useDoctorStore();
 
 export async function doctorLogin(code, password) {
     try {

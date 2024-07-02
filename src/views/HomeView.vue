@@ -2,11 +2,11 @@
 
 import UserForm from "@/components/UserForm.vue";
 import ListView from "@/views/ListView.vue";
-import {useUserStore} from "@/stores/user.js";
+import {useDoctorStore} from "@/stores/doctor.js";
 import axios from "axios";
 import {useRouter} from "vue-router";
 
-const user = useUserStore()
+const user = useDoctorStore()
 const router = useRouter()
 
 const getName = async () => {

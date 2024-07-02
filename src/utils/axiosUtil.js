@@ -1,9 +1,9 @@
 import axios from 'axios';
-import {useUserStore} from "@/stores/user.js";
+import {useDoctorStore} from "@/stores/doctor.js";
 
 export default class Http {
     constructor(baseURL) {
-        const user = useUserStore();
+        const user = useDoctorStore();
 
         this.instance = axios.create({
             baseURL,

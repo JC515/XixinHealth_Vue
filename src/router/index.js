@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import {useUserStore} from "@/stores/user.js";
+import {useDoctorStore} from "@/stores/doctor.js";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,23 +33,33 @@ const router = createRouter({
             path: '/user/reserve',
             name: 'reserve',
             component: () => import('../views/UserReserveView.vue')
-        }
+        },
+        {
+            path: '/user/home',
+            name: 'userHome',
+            component: () => import('../views/UserHomeView.vue')
+        },
+        {
+            path: '/user/orderList',
+            name: 'userOrderList',
+            component: () => import('../views/UserOrderListView.vue')
+        },
     ]
 })
-// 路由守卫
-router.beforeEach(async (to, from, next) => {
-    const user = useUserStore();
-    //放行注册页面
-    if (to.name === 'register' || to.name === 'reserve') {
-        next();
-    }
-    // 登录页面放行
-    if (user.isLogin || to.name === 'login') {
-        next();
-    } else {
-        // 未登录，跳转到登录页面
-        next({name: 'login'});
-    }
-});
+// // 路由守卫
+// router.beforeEach(async (to, from, next) => {
+//     const user = useUserStore();
+//     //放行注册页面
+//     if (to.name === 'register' || to.name === 'reserve') {
+//         next();
+//     }
+//     // 登录页面放行
+//     if (user.isLogin || to.name === 'login') {
+//         next();
+//     } else {
+//         // 未登录，跳转到登录页面
+//         next({name: 'login'});
+//     }
+// });
 
 export default router

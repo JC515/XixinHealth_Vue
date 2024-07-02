@@ -1,7 +1,8 @@
 <script setup>
-import {reactive, ref, computed} from 'vue';
+import {reactive, ref} from 'vue';
 import {useRoute} from 'vue-router';
 import axios from "axios";
+import UserDisplay from "@/components/UserDisplay.vue";
 
 const edit1 = reactive({
   arg1: '',
@@ -27,6 +28,10 @@ const getXue = async () => {
 };
 
 const handleEdit1 = async () => {
+  if (edit1.arg1 === '' || edit1.arg2 === '') {
+    ElMessage.error('参数不能为空');
+    return;
+  }
   await axios.post('http://localhost:8080/overAllResult/updateXue', {
         orderId: orderId,
         arg1: edit1.arg1,
@@ -69,6 +74,10 @@ const getSheng = async () => {
 };
 
 const handleEdit2 = async () => {
+  if (edit2.arg1 === '' || edit2.arg2 === '') {
+    ElMessage.error('参数不能为空');
+    return;
+  }
   await axios.post('http://localhost:8080/overAllResult/updateSheng', {
         orderId: orderId,
         arg1: edit2.arg1,
@@ -207,25 +216,25 @@ const updateRowByodId = async () => {
 }
 
 
-const isXue1OutOfRange = computed(() => {
-  const value = parseFloat(edit1.arg1);
-  return value < 100 || value > 300;
-});
-
-const isXue2OutOfRange = computed(() => {
-  const value = parseFloat(edit1.arg2);
-  return value < 3.5 || value > 5.5;
-});
-
-const isSheng1OutOfRange = computed(() => {
-  const value = parseFloat(edit2.arg1);
-  return value < 41 || value > 111;
-});
-
-const isSheng2OutOfRange = computed(() => {
-  const value = parseFloat(edit2.arg2);
-  return value < 2.85 || value > 7.14;
-});
+// const isXue1OutOfRange = computed(() => {
+//   const value = parseFloat(edit1.arg1);
+//   return value < 100 || value > 300;
+// });
+//
+// const isXue2OutOfRange = computed(() => {
+//   const value = parseFloat(edit1.arg2);
+//   return value < 3.5 || value > 5.5;
+// });
+//
+// const isSheng1OutOfRange = computed(() => {
+//   const value = parseFloat(edit2.arg1);
+//   return value < 41 || value > 111;
+// });
+//
+// const isSheng2OutOfRange = computed(() => {
+//   const value = parseFloat(edit2.arg2);
+//   return value < 2.85 || value > 7.14;
+// });
 
 
 const fetchData = async () => {
@@ -257,7 +266,7 @@ fetchData();
     <el-container>
       <el-header class="el-header">
         <div class="header-content">
-          <el-button type="primary" @click="$router.push({name: 'home'})"
+          <el-button type="primary" @click="$router.push('/home')"
                      style="position: absolute; left: 20px; top: 20px;">返回
           </el-button>
           <h1 class="title">熙心健康体检报告管理系统</h1>
