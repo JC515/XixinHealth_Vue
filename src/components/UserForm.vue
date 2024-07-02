@@ -50,7 +50,6 @@
 <script setup>
 import {reactive} from 'vue'
 import {useOrderStore} from "@/stores/order.js";
-import axios from "axios";
 import eventBus from "@/utils/eventBus.js";
 
 const order = useOrderStore()
@@ -65,15 +64,20 @@ const form = reactive({
 })
 
 const onSubmit = async () => {
-  try {
-    const res = await axios.post('http://localhost:8080/orders/orderListByCondition', form);
-    if (res.data.code === 0) {
-      order.tableData = res.data.data
-      eventBus.emit('changeTableData')
-      ElMessage.success('查询成功')
-    }
-  } catch (err) {
-    console.error(err)
+  checkForm()
+  order.phone = form.phone
+  order.realName = form.realName
+  order.sex = form.sex
+  order.type = form.type
+  order.orderDate = form.orderDate
+  order.isArchived = form.isArchived
+  eventBus.emit('changeTableData')
+}
+
+const checkForm = () => {
+  //将orderDate转化为yyyy-MM-dd格式
+  if (form.orderDate !== '') {
+    form.orderDate = form.orderDate.getFullYear() + '-' + (form.orderDate.getMonth() + 1) + '-' + form.orderDate.getDate()
   }
 }
 

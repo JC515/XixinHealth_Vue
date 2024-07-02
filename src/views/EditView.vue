@@ -1,12 +1,48 @@
 <script setup>
-import {reactive} from 'vue';
+import {reactive, ref, computed} from 'vue';
 import {useRoute} from 'vue-router';
-import UserDisplay from "@/components/UserDisplay.vue";
+import axios from "axios";
 
 const edit1 = reactive({
   arg1: '',
   arg2: '',
 });
+
+const getXue = async () => {
+  await axios.get('http://localhost:8080/overAllResult/getXue', {
+    params: {
+      orderId: orderId
+    }
+  }).then(res => {
+    if (res.data.code === 0) {
+      console.log(res.data.data);
+      edit1.arg1 = res.data.data.arg1;
+      edit1.arg2 = res.data.data.arg2;
+    } else {
+      ElMessage.error('获取数据失败');
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+};
+
+const handleEdit1 = async () => {
+  await axios.post('http://localhost:8080/overAllResult/updateXue', {
+        orderId: orderId,
+        arg1: edit1.arg1,
+        arg2: edit1.arg2
+      }
+  ).then(res => {
+    if (res.data.code === 0) {
+      ElMessage.success('保存成功');
+      getXue();
+    } else {
+      ElMessage.error('保存失败');
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+}
 
 
 const edit2 = reactive({
@@ -14,26 +50,43 @@ const edit2 = reactive({
   arg2: '',
 });
 
+const getSheng = async () => {
+  await axios.get('http://localhost:8080/overAllResult/getSheng', {
+    params: {
+      orderId: orderId
+    }
+  }).then(res => {
+    if (res.data.code === 0) {
+      console.log(res.data.data);
+      edit2.arg1 = res.data.data.arg1;
+      edit2.arg2 = res.data.data.arg2;
+    } else {
+      ElMessage.error('获取数据失败');
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+};
 
-const edit3 = reactive({
-  arg1: '',
-  arg2: '',
-});
+const handleEdit2 = async () => {
+  await axios.post('http://localhost:8080/overAllResult/updateSheng', {
+        orderId: orderId,
+        arg1: edit2.arg1,
+        arg2: edit2.arg2
+      }
+  ).then(res => {
+    if (res.data.code === 0) {
+      ElMessage.success('保存成功');
+      getSheng();
+    } else {
+      ElMessage.error('保存失败');
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+}
 
-
-const tableData = reactive([
-  {
-    date: '2021-08-01',
-    name: '张三',
-    address: '北京市海淀区西二旗',
-  },
-
-  {
-    date: '2021-08-02',
-    name: "李四",
-    address: '北京市海淀区西二旗',
-  }
-]);
+const tableData = reactive([]);
 
 const summaryForm = reactive({
   title: '',
@@ -41,19 +94,172 @@ const summaryForm = reactive({
 });
 
 const route = useRoute();
+
 const orderId = route.params.order_id;
 
-const handleEdit1 = () => {
+const dialogTableVisible = ref(false);
+const dialogTableVisibleIndex = ref(0);
 
+const addRow = async () => {
+  if (summaryForm.title === '' || summaryForm.content === '') {
+    ElMessage.error('标题或内容不能为空');
+    return;
+  }
+  await axios.post('http://localhost:8080/overAllResult/addOverAllResult', {
+    orderId: orderId,
+    title: summaryForm.title,
+    content: summaryForm.content
+  }).then(res => {
+    if (res.data.code === 0) {
+      ElMessage.success('添加成功');
+      clearForm();
+      fetchOverAllResult();
+    } else {
+      ElMessage.error('添加失败');
+    }
+  }).catch(err => {
+    console.log(err);
+  });
 }
-</script>
 
+const clearForm = () => {
+  summaryForm.title = '';
+  summaryForm.content = '';
+}
+
+const updateRow = (index) => {
+  dialogTableVisible.value = true;
+  dialogTableVisibleIndex.value = index;
+}
+
+const deleteRow = async (index) => {
+  console.log('tableData[index].orId=', tableData[index].orId)
+  await axios.delete('http://localhost:8080/overAllResult/deleteOverAllResultByorId', {
+    params: {
+      orId: tableData[index].orId
+    }
+  }).then(res => {
+    if (res.data.code === 0) {
+      ElMessage.success('删除成功');
+      tableData.splice(index, 1);
+    } else {
+      ElMessage.error('删除失败');
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+}
+
+
+const fetchOverAllResult = async () => {
+  await axios.get('http://localhost:8080/overAllResult/getOverAllResultList', {
+    params: {
+      orderId: orderId
+    }
+  }).then(res => {
+        console.log(res.data);
+        if (res.data.code === 0) {
+          console.log(res.data.data);
+          //将结果数据填充到tableData中
+          tableData.splice(0, tableData.length);
+          res.data.data.forEach(item => {
+            tableData.push({
+              orId: item.orId,
+              title: item.title,
+              content: item.content,
+            });
+          });
+          //给tableData的num属性赋值
+          tableData.forEach((item, index) => {
+            item.num = index + 1;
+          });
+          console.log(tableData);
+        } else {
+          ElMessage.error('获取数据失败');
+        }
+      }
+  ).catch(err => {
+    console.log(err);
+  });
+}
+
+const updateRowByodId = async () => {
+  dialogTableVisible.value = false;
+
+  const index = dialogTableVisibleIndex.value; // 获取index的值
+  const orId = tableData[index].orId;
+  const title = tableData[index].title;
+  const content = tableData[index].content;
+
+  await axios.post('http://localhost:8080/overAllResult/updateOverAllResultByorId', {
+    orId: orId,
+    title: title,
+    content: content
+  }).then(res => {
+    if (res.data.code === 0) {
+      ElMessage.success('更新成功');
+    } else {
+      ElMessage.error('更新失败');
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+}
+
+
+const isXue1OutOfRange = computed(() => {
+  const value = parseFloat(edit1.arg1);
+  return value < 100 || value > 300;
+});
+
+const isXue2OutOfRange = computed(() => {
+  const value = parseFloat(edit1.arg2);
+  return value < 3.5 || value > 5.5;
+});
+
+const isSheng1OutOfRange = computed(() => {
+  const value = parseFloat(edit2.arg1);
+  return value < 41 || value > 111;
+});
+
+const isSheng2OutOfRange = computed(() => {
+  const value = parseFloat(edit2.arg2);
+  return value < 2.85 || value > 7.14;
+});
+
+
+const fetchData = async () => {
+  await fetchOverAllResult();
+  await getXue();
+  await getSheng();
+}
+
+const guidang = async () => {
+  await axios.get('http://localhost:8080/orders/updateUserOrderStatus', {
+    params: {
+      orderId: orderId,
+    }
+  }).then(res => {
+    if (res.data.code === 0) {
+      ElMessage.success('归档成功');
+    } else {
+      ElMessage.error('归档失败');
+    }
+  }).catch(err => {
+    console.log(err);
+  });
+}
+
+fetchData();
+</script>
 <template>
   <div class="common-layout">
     <el-container>
       <el-header class="el-header">
         <div class="header-content">
-          <el-button type="primary" @click="$router.go(-1)" style="position: absolute; left: 20px; top: 20px;">返回</el-button>
+          <el-button type="primary" @click="$router.push({name: 'home'})"
+                     style="position: absolute; left: 20px; top: 20px;">返回
+          </el-button>
           <h1 class="title">熙心健康体检报告管理系统</h1>
         </div>
       </el-header>
@@ -68,6 +274,10 @@ const handleEdit1 = () => {
               <el-col :span="12">
                 <h2>编辑体检报告</h2>
               </el-col>
+            </el-row>
+            <el-divider/>
+            <el-row>
+              <h3>血常规</h3>
             </el-row>
             <el-row :gutter="20">
               <el-col :span="12">
@@ -93,77 +303,30 @@ const handleEdit1 = () => {
               </el-col>
             </el-row>
             <el-divider/>
+            <el-row>
+              <h3>肾功能</h3>
+            </el-row>
             <el-row :gutter="20">
               <el-col :span="12">
-                <el-form :model="edit1" label-width="60px">
-                  <el-form-item label="arg1">
-                    <el-input v-model="edit1.arg1"></el-input>
+                <el-form :model="edit2" label-width="60px">
+                  <el-form-item label="血清肌酐">
+                    <el-input v-model="edit2.arg1"></el-input>
+                    umol/L 正常值范围：41-111
                   </el-form-item>
                 </el-form>
               </el-col>
               <el-col :span="12">
                 <el-form :model="edit1" label-width="60px">
-                  <el-form-item label="arg2">
-                    <el-input v-model="edit1.arg2"></el-input>
+                  <el-form-item label="血尿素氮">
+                    <el-input v-model="edit2.arg2"></el-input>
+                    mmol/L 正常值范围：2.85-7.14
                   </el-form-item>
                 </el-form>
               </el-col>
             </el-row>
             <el-row>
               <el-col :span="12">
-                <el-button type="primary" @click="handleEdit1">保存</el-button>
-              </el-col>
-            </el-row>
-            <el-divider/>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form :model="edit1" label-width="60px">
-                  <el-form-item label="arg1">
-                    <el-input v-model="edit1.arg1"></el-input>
-                  </el-form-item>
-                </el-form>
-              </el-col>
-              <el-col :span="12">
-                <el-form :model="edit1" label-width="60px">
-                  <el-form-item label="arg2">
-                    <el-input v-model="edit1.arg2"></el-input>
-                  </el-form-item>
-                </el-form>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="12">
-                <el-button type="primary" @click="handleEdit1">保存</el-button>
-              </el-col>
-            </el-row>
-            <el-divider/>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-form :model="edit1" label-width="60px">
-                  <el-form-item label="arg1">
-                    <el-input v-model="edit1.arg1" type="textarea"></el-input>
-                  </el-form-item>
-                </el-form>
-              </el-col>
-              <el-col :span="12">
-                <el-form :model="edit1" label-width="60px">
-                  <el-form-item label="arg2">
-                    <el-input v-model="edit1.arg2" type="textarea"></el-input>
-                  </el-form-item>
-                </el-form>
-              </el-col>
-              <el-col :span="12">
-                <el-form :model="edit1" label-width="60px">
-                  <el-form-item label="arg1">
-                    <el-input v-model="edit1.arg1" type="textarea"></el-input>
-
-                  </el-form-item>
-                </el-form>
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="12">
-                <el-button type="primary" @click="handleEdit1">保存</el-button>
+                <el-button type="primary" @click="handleEdit2">保存</el-button>
               </el-col>
             </el-row>
             <el-divider/>
@@ -171,16 +334,50 @@ const handleEdit1 = () => {
               <template #header>
                 <div class="card-header">
                   <span>总验结论</span>
-                  <el-button type="danger" style="float: right;">总验结果报告归档</el-button>
+                  <el-button type="danger" style="float: right;" @click="guidang">总验结果报告归档</el-button>
                 </div>
               </template>
               <div>
                 <el-table :data="tableData" style="width: 100%">
-                  <el-table-column prop="date" label="Date"/>
-                  <el-table-column prop="name" label="Name"/>
-                  <el-table-column prop="address" label="Address"/>
+                  <el-table-column prop="num" label="编号"/>
+                  <el-table-column prop="title" label="总验结论项标题"/>
+                  <el-table-column prop="content" label="总验结论项内容"/>
+                  <el-table-column fixed="right" label="操作" min-width="120">
+                    <template #default="scope">
+                      <el-button
+                          link
+                          type="primary"
+                          size="small"
+                          @click.prevent="updateRow(scope.$index)"
+                      >
+                        更新
+                      </el-button>
+                      <el-button
+                          link
+                          type="primary"
+                          size="small"
+                          @click.prevent="deleteRow(scope.$index)"
+                      >
+                        删除
+                      </el-button>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </div>
+              <el-dialog v-model="dialogTableVisible" title="修改" width="800">
+                <el-form :model="tableData[dialogTableVisibleIndex]" label-width="60px">
+                  <el-form-item label="标题" class="update-form-item">
+                    <el-input v-model="tableData[dialogTableVisibleIndex].title"></el-input>
+                  </el-form-item>
+                  <el-form-item label="内容" class="update-form-item">
+                    <el-input v-model="tableData[dialogTableVisibleIndex].content" type="textarea"></el-input>
+                  </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                  <el-button @click="dialogTableVisible = false">取消</el-button>
+                  <el-button type="primary" @click="updateRowByodId">确定</el-button>
+                </div>
+              </el-dialog>
               <div style="margin-top: 20px;">
                 <el-form :model="summaryForm" label-width="60px">
                   <el-form-item label="标题">
@@ -193,8 +390,8 @@ const handleEdit1 = () => {
               </div>
               <template #footer>
                 <el-row justify="center">
-                  <el-button type="primary">添加</el-button>
-                  <el-button type="warning">清空</el-button>
+                  <el-button type="primary" @click="addRow">添加</el-button>
+                  <el-button type="warning" @click="clearForm">清空</el-button>
                 </el-row>
               </template>
             </el-card>
@@ -217,7 +414,6 @@ const handleEdit1 = () => {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 30vh;
 }
 
 .el-header {
@@ -242,4 +438,5 @@ const handleEdit1 = () => {
   color: #333;
   text-shadow: 2px 2px 4px #ddd;
 }
+
 </style>

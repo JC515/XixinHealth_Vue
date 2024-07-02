@@ -19,6 +19,6 @@ export const useOrderStore = defineStore('order', () => {
         orderDate,
         isArchived,
         nowOrder,
-        tableData
+        tableData,
     }
 })
