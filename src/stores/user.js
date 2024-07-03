@@ -5,7 +5,7 @@ export const useUserStore = defineStore('user', () => {
     const userId = ref('')
     const password = ref('')
     const rememberMe = ref(false)
-    const yesLogin=ref(false)
+    const yesLogin = ref(false)
 
     return {
         userId,
